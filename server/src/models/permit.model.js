@@ -2,7 +2,7 @@
 
 const mongoose = require("mongoose");
 
-// Permiso municipal de un puesto
+// Permiso municipal de un puesto.
 const permitSchema = new mongoose.Schema(
     {
         location: {
