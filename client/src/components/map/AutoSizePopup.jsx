@@ -11,6 +11,7 @@ const POPUP_OPTIONS = {
   minWidth: 280,
   maxWidth: 340,
   maxHeight: 460, // si no cabe, se desplaza por dentro
+  closeOnClick: false, // los clics de los botones no deben cerrar el popup
 }
 
 export default function AutoSizePopup({ children, eventHandlers }) {

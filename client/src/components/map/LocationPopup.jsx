@@ -19,6 +19,11 @@ export default function LocationPopup({ location, categories, vendors, onUpdate,
 
   const [lng, lat] = location.ubicacion.coordinates
 
+  // Leaflet y Geoman escuchan el mapa: un clic en un botón del popup no debe llegar hasta ahí
+  function soloBoton(event) {
+    event.stopPropagation()
+  }
+
   function startEditing() {
     setForm(locationToForm(location)) // siempre parte de los datos actuales
     setErrors({})
@@ -57,6 +62,7 @@ export default function LocationPopup({ location, categories, vendors, onUpdate,
 
   return (
     <div className="p-popup" role="dialog" aria-label={`Puesto ${location.nombre}`}
+      onClick={soloBoton} onPointerDown={soloBoton}
       style={{ '--p-color': location.category?.color }}>
       <div className="p-popup__toldo" />
       <button type="button" className="p-icon-btn p-popup__cerrar" onClick={() => map.closePopup()} aria-label="Cerrar">

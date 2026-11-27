@@ -66,6 +66,10 @@ body {
 .p-leyenda {
   z-index: 1000; /* encima de las capas de Leaflet */
 }
+/* El popup debe quedar por encima de la barra y la leyenda: si no, tapan sus botones */
+.p-mapa .leaflet-popup-pane {
+  z-index: 1100;
+}
 .p-mapa__herr {
   left: 56px; /* deja libres los botones de zoom */
   align-items: center;
