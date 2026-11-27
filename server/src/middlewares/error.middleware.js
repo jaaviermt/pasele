@@ -17,6 +17,11 @@ function errorHandler(err, req, res, next) {
         error = new AppError(400, "El cuerpo de la petición no es un JSON válido.");
     }
 
+    // Cuerpo demasiado grande (por ejemplo, un polígono con demasiados vértices)
+    else if (err.type === "entity.too.large") {
+        error = new AppError(413, "La petición es demasiado grande.");
+    }
+
     // Reglas del esquema de Mongoose (required, maxlength, enum...)
     else if (err instanceof mongoose.Error.ValidationError) {
         const details = Object.values(err.errors).map((item) => item.message);

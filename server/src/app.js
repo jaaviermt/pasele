@@ -9,9 +9,12 @@ const { notFound, errorHandler } = require("./middlewares/error.middleware");
 
 const app = express();
 
+// Detrás de Render el IP real viene en X-Forwarded-For
+app.set("trust proxy", 1);
+
 // Solo el frontend configurado en CLIENT_ORIGINS puede llamar a la API
 app.use(cors({ origin: env.clientOrigins }));
-app.use(express.json());
+app.use(express.json({ limit: "256kb" }));
 
 registerRoutes(app);
 
