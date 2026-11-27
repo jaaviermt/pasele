@@ -5,6 +5,7 @@ const cors = require("cors");
 
 const env = require("./config/env");
 const registerRoutes = require("./routes");
+const { notFound, errorHandler } = require("./middlewares/error.middleware");
 
 const app = express();
 
@@ -13,5 +14,9 @@ app.use(cors({ origin: env.clientOrigins }));
 app.use(express.json());
 
 registerRoutes(app);
+
+// Siempre al final: primero el 404 y luego el manejador de errores
+app.use(notFound);
+app.use(errorHandler);
 
 module.exports = app;

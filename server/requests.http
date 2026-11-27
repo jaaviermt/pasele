@@ -1,0 +1,100 @@
+# Peticiones de prueba (extensión REST Client de VS Code).
+# Ejecuta primero "Login correcto": las demás toman el token de esa respuesta.
+@baseUrl = http://localhost:3000/api
+@token = {{login.response.body.data.token}}
+
+### Salud del servidor -> 200
+GET {{baseUrl}}/health
+
+### ---------- REGISTRO ----------
+
+### Registro correcto -> 201
+POST {{baseUrl}}/auth/register
+Content-Type: application/json
+
+{
+  "nombre": "Ana López",
+  "email": "ana@correo.com",
+  "password": "12345678"
+}
+
+### Correo duplicado (aunque cambien mayúsculas) -> 400
+POST {{baseUrl}}/auth/register
+Content-Type: application/json
+
+{
+  "nombre": "Otra Ana",
+  "email": "ANA@correo.com",
+  "password": "12345678"
+}
+
+### Campos inválidos y campo no permitido -> 400 con details
+POST {{baseUrl}}/auth/register
+Content-Type: application/json
+
+{
+  "nombre": "",
+  "email": "no-es-correo",
+  "password": "123",
+  "rol": "admin"
+}
+
+### JSON mal escrito -> 400
+POST {{baseUrl}}/auth/register
+Content-Type: application/json
+
+{ "nombre":
+
+### ---------- LOGIN ----------
+
+### Login correcto -> 200 (guarda el token)
+# @name login
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "ana@correo.com",
+  "password": "12345678"
+}
+
+### Contraseña incorrecta -> 401
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "ana@correo.com",
+  "password": "otraclave"
+}
+
+### Correo que no existe -> 401 (mismo mensaje)
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "nadie@correo.com",
+  "password": "12345678"
+}
+
+### Campos vacíos -> 400
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{}
+
+### ---------- RUTA PROTEGIDA ----------
+
+### Con token -> 200
+GET {{baseUrl}}/auth/me
+Authorization: Bearer {{token}}
+
+### Sin token -> 401
+GET {{baseUrl}}/auth/me
+
+### Token inválido -> 401
+GET {{baseUrl}}/auth/me
+Authorization: Bearer token.falso.123
+
+### ---------- 404 ----------
+
+### Ruta inexistente -> 404
+GET {{baseUrl}}/no-existe
