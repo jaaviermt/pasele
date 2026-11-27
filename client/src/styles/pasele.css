@@ -260,6 +260,7 @@
   cursor: pointer;
 }
 .p-icon-btn:hover { background: var(--p-amarillo); }
+.p-icon-btn { transition: background 0.12s; }
 
 /* ---------- Formularios ---------- */
 .p-campo { display: grid; gap: 6px; margin-bottom: var(--p-e-4); }
