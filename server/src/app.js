@@ -15,7 +15,7 @@ app.use(express.json());
 
 registerRoutes(app);
 
-// Siempre al final: primero el 404 y luego el manejador de errores
+// Siempre al final: primero el 404 y luego el manejador de errores.
 app.use(notFound);
 app.use(errorHandler);
 
