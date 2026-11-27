@@ -36,6 +36,11 @@ function errorHandler(err, req, res, next) {
         error = new AppError(400, `Ya existe un registro con ese valor de '${field}'.`);
     }
 
+    // MongoDB no pudo indexar la geometría (ej. polígono inválido que pasó la validación)
+    else if (err.code === 16755) {
+        error = new AppError(400, "La geometría enviada no es válida.");
+    }
+
     else if (!(err instanceof AppError)) {
         // Error no previsto: se registra completo, pero al cliente no se le dan detalles
         console.error(`[${new Date().toISOString()}] ${req.method} ${req.originalUrl}`);

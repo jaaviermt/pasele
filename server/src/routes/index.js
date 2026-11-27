@@ -8,6 +8,8 @@ const authRoutes = require("./auth.routes");
 const categoryRoutes = require("./category.routes");
 const vendorRoutes = require("./vendor.routes");
 const permitRoutes = require("./permit.routes");
+const locationRoutes = require("./location.routes");
+const zoneRoutes = require("./zone.routes");
 
 // Monta todas las rutas bajo /api
 function registerRoutes(app) {
@@ -21,6 +23,8 @@ function registerRoutes(app) {
     apiRouter.use("/categories", requireAuth, categoryRoutes);
     apiRouter.use("/vendors", requireAuth, vendorRoutes);
     apiRouter.use("/permits", requireAuth, permitRoutes);
+    apiRouter.use("/locations", requireAuth, locationRoutes);
+    apiRouter.use("/zones", requireAuth, zoneRoutes);
 
     app.use("/api", apiRouter);
 }

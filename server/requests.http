@@ -105,8 +105,8 @@ GET {{baseUrl}}/no-existe
 @categoryId = {{newCategory.response.body.data.id}}
 @vendorId = {{newVendor.response.body.data.id}}
 @permitId = {{newPermit.response.body.data.id}}
-# Pega aquí el id de un puesto (Location) cuando exista la fase 3
-@locationId = PEGA_AQUI_EL_ID_DE_UN_PUESTO
+# Toma el id del puesto creado en "Crear puesto" (sección de la fase 3, más abajo)
+@locationId = {{newLocation.response.body.data.id}}
 
 ### ---------- GIROS (/categories) ----------
 
@@ -238,4 +238,122 @@ Content-Type: application/json
 
 ### Borrar -> 200
 DELETE {{baseUrl}}/permits/{{permitId}}
+Authorization: Bearer {{token}}
+
+# =====================================================================
+# FASE 3: ZONAS Y PUESTOS (crea antes un giro y un comerciante)
+# =====================================================================
+@zoneId = {{newZone.response.body.data.id}}
+
+### ---------- ZONAS (/zones) ----------
+
+### Crear zona -> 201 (el anillo no viene cerrado: el servidor lo cierra)
+# @name newZone
+POST {{baseUrl}}/zones
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "nombre": "Tianguis Centro",
+  "dias": ["miercoles", "domingo"],
+  "area": {
+    "type": "Polygon",
+    "coordinates": [[[-101.70, 21.10], [-101.66, 21.10], [-101.66, 21.14], [-101.70, 21.14]]]
+  }
+}
+
+### Polígono que se cruza a sí mismo (moño) -> 400
+POST {{baseUrl}}/zones
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "nombre": "Moño",
+  "area": { "type": "Polygon", "coordinates": [[[0, 0], [2, 2], [2, 0], [0, 2], [0, 0]]] }
+}
+
+### Día inválido y menos de 3 vértices -> 400
+POST {{baseUrl}}/zones
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "nombre": "Mala",
+  "dias": ["feriado"],
+  "area": { "type": "Polygon", "coordinates": [[[0, 0], [1, 1]]] }
+}
+
+### Listar zonas -> 200
+GET {{baseUrl}}/zones
+Authorization: Bearer {{token}}
+
+### Borrar zona -> 200
+DELETE {{baseUrl}}/zones/{{zoneId}}
+Authorization: Bearer {{token}}
+
+### ---------- PUESTOS (/locations) ----------
+
+### Crear puesto dentro de la zona -> 201 (trae giro y comerciante por nombre y el estado)
+# @name newLocation
+POST {{baseUrl}}/locations
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "nombre": "Tacos Don Pepe",
+  "descripcion": "Tacos al pastor y de suadero",
+  "category": "{{categoryId}}",
+  "vendor": "{{vendorId}}",
+  "ubicacion": { "type": "Point", "coordinates": [-101.68, 21.12] }
+}
+
+### Coordenadas invertidas [lat, lng] -> 400
+POST {{baseUrl}}/locations
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "nombre": "Mal ubicado",
+  "descripcion": "Prueba",
+  "category": "{{categoryId}}",
+  "ubicacion": { "type": "Point", "coordinates": [21.12, -101.68] }
+}
+
+### Listar todos (cada uno con su estado) -> 200
+GET {{baseUrl}}/locations
+Authorization: Bearer {{token}}
+
+### Búsqueda parcial sin mayúsculas -> 200
+GET {{baseUrl}}/locations?search=TACO
+Authorization: Bearer {{token}}
+
+### Filtrar por giro -> 200
+GET {{baseUrl}}/locations?category={{categoryId}}
+Authorization: Bearer {{token}}
+
+### Filtrar por zona ($geoWithin) -> 200
+GET {{baseUrl}}/locations?zone={{zoneId}}
+Authorization: Bearer {{token}}
+
+### Los tres filtros juntos -> 200
+GET {{baseUrl}}/locations?search=tacos&category={{categoryId}}&zone={{zoneId}}
+Authorization: Bearer {{token}}
+
+### Zona mal formada -> 400
+GET {{baseUrl}}/locations?zone=abc
+Authorization: Bearer {{token}}
+
+### Detalle -> 200
+GET {{baseUrl}}/locations/{{locationId}}
+Authorization: Bearer {{token}}
+
+### Editar (lo que hará el popup) -> 200
+PATCH {{baseUrl}}/locations/{{locationId}}
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{ "nombre": "Tacos El Pepe", "vendor": null }
+
+### Borrar puesto (también borra sus permisos) -> 200
+DELETE {{baseUrl}}/locations/{{locationId}}
 Authorization: Bearer {{token}}
