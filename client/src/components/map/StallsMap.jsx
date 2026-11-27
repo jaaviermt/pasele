@@ -1,15 +1,19 @@
 import { useEffect, useRef, useState } from 'react'
-import { MapContainer, Marker, Polygon, Popup, TileLayer, Tooltip, useMapEvents } from 'react-leaflet'
+import { MapContainer, Marker, Polygon, TileLayer, Tooltip, useMapEvents } from 'react-leaflet'
+import AutoSizePopup from './AutoSizePopup'
 import LocationPopup from './LocationPopup'
 import NewLocationForm from './NewLocationForm'
 import ZoneDrawControl from './ZoneDrawControl'
 import { createMarkerIcon, newPointIcon } from './markerIcon'
-
-const ZONE_STYLE = { color: '#2b45c9', weight: 3, dashArray: '8 6', fillColor: '#4c8fd6', fillOpacity: 0.15 }
+import { Boton, InsigniaEstado } from '../ui/ui'
+import { IcoLapizZona, IcoX } from '../ui/icons'
+import { ESTADOS } from '../../utils/estados'
+import { zoneColor } from '../../utils/zonas'
 
 // Centro inicial: León, Guanajuato. Leaflet usa [latitud, longitud].
 const INITIAL_CENTER = [21.1236, -101.682]
 const INITIAL_ZOOM = 15
+
 
 // Escucha los clics en el mapa y avisa el punto elegido.
 // Mientras se dibuja una zona, los clics son vértices del polígono y se ignoran aquí.
@@ -27,17 +31,19 @@ function ClickToAdd({ onPick }) {
 // así se pueden registrar puestos dentro del tianguis.
 function ZoneShape({ zone }) {
   const positions = zone.area.coordinates[0].map(([lng, lat]) => [lat, lng]) // GeoJSON -> Leaflet
+  const color = zoneColor(zone.id)
 
   return (
-    <Polygon positions={positions} pathOptions={ZONE_STYLE} interactive={false} pmIgnore>
-      <Tooltip permanent direction="center" className="etiqueta-zona">{zone.nombre}</Tooltip>
+    <Polygon positions={positions} interactive={false} pmIgnore
+      pathOptions={{ color, weight: 3, dashArray: '8 6', fillColor: color, fillOpacity: 0.18 }}>
+      <Tooltip permanent direction="center" className="p-etiqueta-zona">{zone.nombre}</Tooltip>
     </Polygon>
   )
 }
 
 // Marcador temporal con el formulario de alta; abre su popup en cuanto aparece.
 // No se quita al cerrar el popup (React en modo estricto lo cierra y reabre al montar);
-// se quita con "Cancelar", al guardar o al hacer clic en otro punto del mapa.
+// se quita con la "x", al guardar o al hacer clic en otro punto del mapa.
 function NewPointMarker({ point, categories, vendors, onCreate, onClose }) {
   const markerRef = useRef(null)
 
@@ -47,11 +53,11 @@ function NewPointMarker({ point, categories, vendors, onCreate, onClose }) {
 
   return (
     <Marker position={point} icon={newPointIcon} ref={markerRef} title="Nuevo puesto (clic para abrir)">
-      <Popup minWidth={260} maxWidth={320}>
+      <AutoSizePopup>
         {/* key: si se hace clic en otro punto, el formulario empieza vacío */}
         <NewLocationForm key={`${point.lat},${point.lng}`} point={point} categories={categories}
           vendors={vendors} onCreate={onCreate} onCancel={onClose} />
-      </Popup>
+      </AutoSizePopup>
     </Marker>
   )
 }
@@ -72,14 +78,22 @@ function LocationMarker({ location, categories, vendors, onUpdate, onDelete }) {
   }, [location.nombre])
 
   return (
-    <Marker position={[lat, lng]} icon={createMarkerIcon(location.category?.color, location.estado)}
+    <Marker position={[lat, lng]} icon={createMarkerIcon(location.category, location.estado)}
       title={location.nombre} ref={markerRef}>
-      <Popup minWidth={260} maxWidth={320}
-        eventHandlers={{ remove: () => setPopupVersion((version) => version + 1) }}>
+      <AutoSizePopup eventHandlers={{ remove: () => setPopupVersion((version) => version + 1) }}>
         <LocationPopup key={popupVersion} location={location} categories={categories}
           vendors={vendors} onUpdate={onUpdate} onDelete={onDelete} />
-      </Popup>
+      </AutoSizePopup>
     </Marker>
+  )
+}
+
+function Leyenda() {
+  return (
+    <div className="p-leyenda">
+      <h3>Estados</h3>
+      {Object.keys(ESTADOS).map((clave) => <InsigniaEstado key={clave} estado={clave} />)}
+    </div>
   )
 }
 
@@ -87,37 +101,58 @@ export default function StallsMap({
   locations, zones, categories, vendors, onCreate, onUpdate, onDelete, onZoneDrawn,
 }) {
   const [newPoint, setNewPoint] = useState(null)
+  const [drawing, setDrawing] = useState(false)
 
   async function handleCreate(body) {
     await onCreate(body)
     setNewPoint(null) // al guardarse, el marcador temporal se quita
   }
 
+  function toggleDrawing() {
+    setNewPoint(null)
+    setDrawing((current) => !current)
+  }
+
   return (
-    <MapContainer center={INITIAL_CENTER} zoom={INITIAL_ZOOM} className="mapa">
-      <TileLayer
-        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-        url="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
-        maxZoom={19}
-      />
+    // El botón y la leyenda van encima del mapa, fuera de Leaflet, para que sus clics no lleguen al mapa
+    <div className="p-mapa">
+      <MapContainer center={INITIAL_CENTER} zoom={INITIAL_ZOOM} className="p-mapa__leaflet">
+        <TileLayer
+          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+          url="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
+          maxZoom={19}
+        />
 
-      <ClickToAdd onPick={setNewPoint} />
-      <ZoneDrawControl onDrawn={onZoneDrawn} />
+        <ClickToAdd onPick={setNewPoint} />
+        <ZoneDrawControl drawing={drawing} onDrawn={onZoneDrawn} onDrawEnd={() => setDrawing(false)} />
 
-      {/* Zonas primero para que los toldos queden encima */}
-      {zones.map((zone) => (
-        <ZoneShape key={zone.id} zone={zone} />
-      ))}
+        {/* Zonas primero para que los toldos queden encima */}
+        {zones.map((zone) => <ZoneShape key={zone.id} zone={zone} />)}
 
-      {locations.map((location) => (
-        <LocationMarker key={location.id} location={location} categories={categories}
-          vendors={vendors} onUpdate={onUpdate} onDelete={onDelete} />
-      ))}
+        {locations.map((location) => (
+          <LocationMarker key={location.id} location={location} categories={categories}
+            vendors={vendors} onUpdate={onUpdate} onDelete={onDelete} />
+        ))}
 
-      {newPoint && (
-        <NewPointMarker point={newPoint} categories={categories} vendors={vendors}
-          onCreate={handleCreate} onClose={() => setNewPoint(null)} />
-      )}
-    </MapContainer>
+        {newPoint && (
+          <NewPointMarker point={newPoint} categories={categories} vendors={vendors}
+            onCreate={handleCreate} onClose={() => setNewPoint(null)} />
+        )}
+      </MapContainer>
+
+      <div className="p-mapa__herr">
+        <Boton chico variante={drawing ? 'primario' : 'azul'} aria-pressed={drawing} onClick={toggleDrawing}
+          icono={drawing ? <IcoX size={16} /> : <IcoLapizZona size={16} />}>
+          {drawing ? 'Cancelar trazo' : 'Dibujar zona'}
+        </Boton>
+        {drawing && (
+          <span className="p-mapa__instruccion" role="status">
+            Haz clic para poner vértices y en el primero para cerrar la zona
+          </span>
+        )}
+      </div>
+
+      <Leyenda />
+    </div>
   )
 }

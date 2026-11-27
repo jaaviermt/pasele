@@ -1,4 +1,5 @@
 import { createContext, useCallback, useContext, useMemo, useState } from 'react'
+import { IcoAlerta, IcoCheck, IcoX } from '../components/ui/icons'
 
 // Avisos de éxito y error que aparecen en la esquina y se cierran solos.
 const NoticeContext = createContext(null)
@@ -37,35 +38,25 @@ export function NoticeProvider({ children }) {
   return (
     <NoticeContext.Provider value={value}>
       {children}
-      <div className="avisos" aria-live="polite">
+      <div className="p-toasts" aria-live="polite">
         {notices.map((notice) => (
-          <div
-            key={notice.id}
-            className={`aviso aviso--${notice.type}`}
-            role={notice.type === 'error' ? 'alert' : 'status'}
-          >
+          <div key={notice.id} className={`p-toast p-toast--${notice.type}`}
+            role={notice.type === 'error' ? 'alert' : 'status'}>
             {/* Icono y texto además del color */}
-            <span className="aviso__icono" aria-hidden="true">
-              {notice.type === 'error' ? '✖' : '✔'}
-            </span>
-            <div className="aviso__texto">
-              <strong>{notice.type === 'error' ? 'Error: ' : 'Listo: '}</strong>
-              {notice.message}
+            {notice.type === 'exito' ? <IcoCheck size={22} /> : <IcoAlerta size={22} />}
+            <div>
+              <p className="p-toast__t">
+                {notice.type === 'exito' ? '¡Listo! ' : '¡Aguas! '}
+                <span className="p-toast__msg">{notice.message}</span>
+              </p>
               {notice.details?.length > 0 && (
                 <ul>
-                  {notice.details.map((detail) => (
-                    <li key={detail}>{detail}</li>
-                  ))}
+                  {notice.details.map((detail) => <li key={detail}>{detail}</li>)}
                 </ul>
               )}
             </div>
-            <button
-              type="button"
-              className="aviso__cerrar"
-              onClick={() => dismiss(notice.id)}
-              aria-label="Cerrar aviso"
-            >
-              ×
+            <button type="button" className="p-icon-btn" onClick={() => dismiss(notice.id)} aria-label="Cerrar aviso">
+              <IcoX size={14} />
             </button>
           </div>
         ))}

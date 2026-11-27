@@ -1,5 +1,7 @@
 import { useState } from 'react'
 import LocationFields from './LocationFields'
+import { Boton, Campo } from '../ui/ui'
+import { IcoX } from '../ui/icons'
 import { EMPTY_LOCATION_FORM, formToBody, validateLocationForm } from '../../utils/locationForm'
 import { formatCoordinate } from '../../utils/format'
 
@@ -33,24 +35,21 @@ export default function NewLocationForm({ point, categories, vendors, onCreate, 
   }
 
   return (
-    <form className="formulario formulario--popup" onSubmit={handleSubmit} noValidate>
-      <h3 className="popup__titulo">Nuevo puesto</h3>
-
-      <LocationFields form={form} errors={errors} onChange={handleChange}
-        categories={categories} vendors={vendors} idPrefix="nuevo" />
-
-      <p className="popup__coordenadas">
-        Lat {formatCoordinate(point.lat)}, Lng {formatCoordinate(point.lng)}
-      </p>
-
-      <div className="popup__acciones">
-        <button type="submit" className="boton boton--primario" disabled={sending}>
-          {sending ? 'Guardando…' : 'Registrar puesto'}
-        </button>
-        <button type="button" className="boton boton--secundario" onClick={onCancel}>
-          Cancelar
-        </button>
-      </div>
-    </form>
+    <div className="p-popup" role="dialog" aria-label="Nuevo puesto" style={{ '--p-color': 'var(--p-verde-vivo)' }}>
+      <div className="p-popup__toldo" />
+      <button type="button" className="p-icon-btn p-popup__cerrar" onClick={onCancel} aria-label="Cerrar">
+        <IcoX size={14} />
+      </button>
+      <form className="p-popup__body" onSubmit={handleSubmit} noValidate>
+        <h3 className="p-popup__titulo">¡Nuevo puesto!</h3>
+        <LocationFields form={form} errors={errors} onChange={handleChange}
+          categories={categories} vendors={vendors} />
+        <Campo label="Coordenadas" readOnly
+          value={`${formatCoordinate(point.lat)}, ${formatCoordinate(point.lng)}`} />
+        <Boton type="submit" cargando={sending} textoCargando="Guardando…" style={{ width: '100%' }}>
+          Registrar puesto
+        </Boton>
+      </form>
+    </div>
   )
 }

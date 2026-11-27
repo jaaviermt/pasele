@@ -1,5 +1,8 @@
 import { useState } from 'react'
+import { Boton } from '../ui/ui'
+import { IcoBote } from '../ui/icons'
 import { formatDias } from '../../utils/dias'
+import { zoneColor } from '../../utils/zonas'
 
 // Lista de zonas guardadas con botón para eliminar (confirmación en la misma fila).
 export default function ZonesPanel({ zones, onDelete }) {
@@ -19,36 +22,32 @@ export default function ZonesPanel({ zones, onDelete }) {
   }
 
   return (
-    <aside className="panel-zonas" aria-labelledby="titulo-zonas">
-      <h2 id="titulo-zonas">Zonas ({zones.length})</h2>
-      <p className="panel-zonas__ayuda">
-        Dibuja una zona con el botón de polígono o rectángulo en el mapa.
-      </p>
+    <aside className="p-card p-zonas" aria-labelledby="zonas-titulo">
+      <h2 id="zonas-titulo" className="p-h3" style={{ color: 'var(--p-rojo)' }}>Zonas ({zones.length})</h2>
 
       {zones.length === 0 ? (
-        <p>Todavía no hay zonas.</p>
+        <p className="p-ayuda">Aún no hay zonas. Usa «Dibujar zona» en el mapa.</p>
       ) : (
-        <ul className="panel-zonas__lista">
+        <ul>
           {zones.map((zone) => (
             <li key={zone.id}>
-              <strong>{zone.nombre}</strong>
-              <span className="panel-zonas__dias">{formatDias(zone.dias)}</span>
+              <span className="p-zonas__sw" style={{ background: zoneColor(zone.id) }} aria-hidden />
+              <div style={{ minWidth: 0 }}>
+                <b>{zone.nombre}</b>
+                <div className="p-zonas__dias">{formatDias(zone.dias)}</div>
+              </div>
 
               {confirmingId === zone.id ? (
-                <div className="panel-zonas__confirmar" role="group" aria-label={`Confirmar eliminar ${zone.nombre}`}>
-                  <span>¿Eliminar esta zona?</span>
-                  <button type="button" className="boton boton--peligro"
-                    onClick={() => handleDelete(zone.id)} disabled={deletingId === zone.id}>
-                    {deletingId === zone.id ? 'Eliminando…' : 'Sí, eliminar'}
-                  </button>
-                  <button type="button" className="boton boton--secundario" onClick={() => setConfirmingId(null)}>
-                    Cancelar
-                  </button>
+                <div className="p-zonas__confirmar" role="group" aria-label={`Confirmar eliminar ${zone.nombre}`}>
+                  <span>¿Eliminar?</span>
+                  <Boton chico variante="primario" cargando={deletingId === zone.id} textoCargando="…"
+                    onClick={() => handleDelete(zone.id)}>Sí</Boton>
+                  <Boton chico variante="fantasma" onClick={() => setConfirmingId(null)}>No</Boton>
                 </div>
               ) : (
-                <button type="button" className="boton boton--secundario"
-                  onClick={() => setConfirmingId(zone.id)} aria-label={`Eliminar zona ${zone.nombre}`}>
-                  Eliminar
+                <button type="button" className="p-icon-btn" aria-label={`Eliminar zona ${zone.nombre}`}
+                  onClick={() => setConfirmingId(zone.id)}>
+                  <IcoBote size={16} />
                 </button>
               )}
             </li>

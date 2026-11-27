@@ -4,7 +4,7 @@ import { useNotice } from '../context/NoticeContext'
 import StallsMap from '../components/map/StallsMap'
 import ZoneDialog from '../components/map/ZoneDialog'
 import ZonesPanel from '../components/map/ZonesPanel'
-import FiltersBar from '../components/FiltersBar'
+import { Counters, FiltersBar } from '../components/FiltersBar'
 import LocationsTable from '../components/LocationsTable'
 
 const EMPTY_FILTERS = { search: '', category: '', zone: '' }
@@ -156,25 +156,31 @@ export default function MapPage() {
   }
 
   return (
-    <div className="vista-mapa">
-      <FiltersBar filters={filters} onChange={setFilters} onClear={() => setFilters(EMPTY_FILTERS)}
-        categories={categories} zones={zones} locations={locations} />
+    <main className="p-page">
+      <div className="p-page__titulo">
+        <h1 className="p-h1">El Mapa</h1>
+        <span className="p-script">del tianguis de hoy</span>
+      </div>
 
-      <p className="ayuda">
-        Haz clic en el mapa para registrar un puesto. Haz clic en un toldo para verlo, editarlo o
-        eliminarlo.
+      <FiltersBar filters={filters} onChange={setFilters} onClear={() => setFilters(EMPTY_FILTERS)}
+        categories={categories} zones={zones} />
+      <Counters locations={locations} />
+
+      <p className="p-ayuda-mapa">
+        Haz clic en el mapa para registrar un puesto. Haz clic en un toldo para verlo, editarlo o eliminarlo.
       </p>
 
-      <div className="vista-mapa__principal">
+      <div className="p-mapa-layout">
         <StallsMap locations={locations} zones={zones} categories={categories} vendors={vendors}
           onCreate={createLocation} onUpdate={updateLocation} onDelete={deleteLocation}
           onZoneDrawn={handleZoneDrawn} />
         <ZonesPanel zones={zones} onDelete={deleteZone} />
       </div>
 
+      <h2 className="p-h2" style={{ marginBottom: 16 }}>Puestos ({locations.length})</h2>
       <LocationsTable locations={locations} loading={loading} />
 
       {pendingZone && <ZoneDialog onSave={saveZone} onDiscard={discardPendingZone} />}
-    </div>
+    </main>
   )
 }

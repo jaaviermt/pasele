@@ -3,46 +3,40 @@ import { useMap } from 'react-leaflet'
 import '@geoman-io/leaflet-geoman-free'
 import '@geoman-io/leaflet-geoman-free/dist/leaflet-geoman.css'
 
-// Agrega al mapa la barra de Leaflet-Geoman solo con las herramientas
-// para dibujar zonas (polígono y rectángulo). Al terminar un trazo, avisa con onDrawn(layer).
-export default function ZoneDrawControl({ onDrawn }) {
+// Conecta Leaflet-Geoman con el botón "Dibujar zona" del diseño (no usa la barra de Geoman).
+//   drawing=true  -> activa el trazo de polígono
+//   drawing=false -> lo cancela
+// Avisa con onDrawn(layer) al cerrar el polígono y con onDrawEnd() cuando el trazo termina
+// (guardado o cancelado), para que el botón vuelva a su estado normal.
+export default function ZoneDrawControl({ drawing, onDrawn, onDrawEnd }) {
   const map = useMap()
 
-  // Se guarda la función más reciente sin volver a montar la barra en cada render
-  const onDrawnRef = useRef(onDrawn)
+  // Se guardan las funciones más recientes sin volver a registrar los eventos
+  const callbacks = useRef({ onDrawn, onDrawEnd })
   useEffect(() => {
-    onDrawnRef.current = onDrawn
-  }, [onDrawn])
+    callbacks.current = { onDrawn, onDrawEnd }
+  }, [onDrawn, onDrawEnd])
 
   useEffect(() => {
     map.pm.setLang('es')
-    // Geoman no deja cerrar un polígono cuyos lados se crucen
-    map.pm.setGlobalOptions({ allowSelfIntersection: false })
-
-    map.pm.addControls({
-      position: 'topleft',
-      drawPolygon: true,
-      drawRectangle: true,
-      drawMarker: false,
-      drawCircleMarker: false,
-      drawPolyline: false,
-      drawCircle: false,
-      drawText: false,
-      editMode: false,
-      dragMode: false,
-      cutPolygon: false,
-      removalMode: false,
-      rotateMode: false,
-    })
-
-    const handleCreate = (event) => onDrawnRef.current(event.layer)
+    const handleCreate = (event) => callbacks.current.onDrawn(event.layer)
+    const handleDrawEnd = () => callbacks.current.onDrawEnd()
     map.on('pm:create', handleCreate)
-
+    map.on('pm:drawend', handleDrawEnd)
     return () => {
       map.off('pm:create', handleCreate)
-      map.pm.removeControls()
+      map.off('pm:drawend', handleDrawEnd)
     }
   }, [map])
+
+  useEffect(() => {
+    if (drawing) {
+      // allowSelfIntersection: false -> Geoman no deja poner un vértice que cruce otro lado
+      map.pm.enableDraw('Polygon', { allowSelfIntersection: false })
+    } else if (map.pm.globalDrawModeEnabled()) {
+      map.pm.disableDraw()
+    }
+  }, [drawing, map])
 
   return null
 }

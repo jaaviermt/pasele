@@ -1,541 +1,170 @@
-/* Estilos base y de las piezas de la fase 4. La guía visual completa se aplica en la fase 8. */
-@import './styles/tokens.css';
-
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
-}
+/* Sistema visual del diseño (tokens --p-* y componentes). No editar ahí los colores sueltos:
+   usar siempre los tokens. Aquí solo va lo que el diseño no traía: la integración con Leaflet
+   y unas piezas pequeñas de la app real. */
+@import './styles/pasele.css';
 
 body {
   margin: 0;
-  font-family: var(--f-texto);
-  font-size: 1rem;
-  line-height: 1.5;
-  color: var(--negro);
-  background: var(--crema);
 }
 
-button,
-input,
-select,
-textarea {
-  font: inherit;
-}
-
-:focus-visible {
-  outline: 3px solid var(--azul);
-  outline-offset: 2px;
-}
-
-.cargando {
-  padding: 2rem;
-  text-align: center;
-}
-
-/* ---------- Botones: borde negro, sombra sólida, se hunden al presionar ---------- */
-.boton {
-  font-family: var(--f-menu);
-  font-size: 1.1rem;
-  letter-spacing: 0.04em;
-  padding: 0.5rem 1.1rem;
-  border: var(--borde);
-  box-shadow: var(--sombra-solida);
-  cursor: pointer;
-  transition: transform 0.08s, box-shadow 0.08s;
-}
-.boton:active:not(:disabled) {
-  transform: translate(4px, 4px);
-  box-shadow: 0 0 0 var(--negro);
-}
-.boton:disabled {
-  opacity: 0.6;
-  cursor: wait;
-}
-.boton--primario {
-  background: var(--rojo);
-  color: #fff;
-}
-.boton--secundario {
-  background: #fff;
-  color: var(--negro);
-}
-.boton--peligro {
-  background: var(--negro);
-  color: #fff;
-}
-
-/* ---------- Encabezado y navegación ---------- */
-.encabezado {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 1rem 2rem;
-  padding: 0.75rem 1.5rem;
-  background: var(--crema);
-  border-bottom: var(--borde);
-}
-.encabezado__titulo {
-  margin: 0;
-  font-size: 2.2rem;
-}
-.encabezado__nav {
-  display: flex;
-  gap: 1rem;
-}
-.encabezado__nav a {
-  font-family: var(--f-menu);
-  font-size: 1.2rem;
-  color: var(--negro);
+.p-header__logo {
   text-decoration: none;
-  padding: 0.2rem 0.6rem;
-  border: 2px solid transparent;
 }
-.encabezado__nav a.active {
-  border-color: var(--negro);
-  background: var(--amarillo);
+.p-acceso__texto {
+  max-width: 440px;
+  font-size: 1.05rem;
 }
-.encabezado__usuario {
-  margin-left: auto;
+.p-cargando {
   display: flex;
   align-items: center;
-  gap: 1rem;
+  justify-content: center;
+  gap: var(--p-e-3);
+  font-weight: 700;
 }
-.contenido {
-  padding: 1.5rem;
+.p-toast__msg {
+  font-family: var(--p-f-texto);
+  font-weight: 700;
 }
-
-/* ---------- Pantalla de acceso ---------- */
-.acceso {
-  min-height: 100vh;
-  display: grid;
-  place-items: center;
-  padding: 1.5rem;
-  background: var(--negro);
+.p-alerta__lista {
+  margin: 6px 0 0;
+  padding-left: 18px;
+  font-weight: 400;
 }
-.acceso__panel {
-  width: min(100%, 26rem);
-  padding: 2rem;
-  background: var(--crema);
-  border: var(--borde);
-  box-shadow: 8px 8px 0 var(--amarillo);
-}
-.acceso__titulo {
-  margin: 0;
-  font-family: var(--f-cartel);
-  font-size: 3rem;
-  text-align: center;
-}
-.acceso__lema {
-  margin: 0 0 1.25rem;
-  text-align: center;
-}
-.acceso__pestanas {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  margin-bottom: 1.25rem;
-  border: var(--borde);
-}
-.acceso__pestanas button {
-  padding: 0.5rem;
-  font-family: var(--f-menu);
-  font-size: 1.05rem;
-  background: #fff;
-  border: none;
-  cursor: pointer;
-}
-.acceso__pestanas button.activa {
-  background: var(--azul);
-  color: #fff;
+.p-ayuda-mapa {
+  margin: 0 0 var(--p-e-3);
+  font-weight: 700;
 }
 
-/* ---------- Formularios (siempre en Barlow) ---------- */
-.formulario {
-  display: grid;
-  gap: 1rem;
-}
-.campo {
-  display: grid;
-  gap: 0.25rem;
-}
-.campo label {
-  font-weight: 600;
-}
-.campo input,
-.campo select,
-.campo textarea {
-  padding: 0.5rem 0.6rem;
-  border: 2px solid var(--negro);
-  background: #fff;
-}
-.campo textarea {
-  resize: vertical;
-}
-.campo [aria-invalid='true'] {
-  border-color: var(--rojo-texto);
-}
-.campo small {
-  font-size: 0.875rem;
-}
-.campo__error,
-.formulario__error {
-  color: var(--rojo-texto);
-}
-.formulario__error {
-  padding: 0.75rem;
-  border: 2px solid var(--rojo-texto);
-  background: #fff;
-}
-.formulario__error ul {
-  margin: 0.25rem 0 0;
-  padding-left: 1.2rem;
+/* La tabla de puestos no se selecciona con clic */
+.p-tabla--fija tbody tr {
+  cursor: auto;
 }
 
-/* ---------- Avisos: fluorescente solo sobre negro ---------- */
-.avisos {
-  position: fixed;
-  right: 1rem;
-  bottom: 1rem;
-  z-index: 2000; /* por encima del mapa de Leaflet */
-  display: grid;
-  gap: 0.75rem;
-  width: min(calc(100% - 2rem), 24rem);
+/* ---------- Modal sobre <dialog> nativo ---------- */
+.p-dialogo {
+  padding: 0;
+  color: var(--p-tinta);
+  font-family: var(--p-f-texto);
 }
-.aviso {
-  display: flex;
-  align-items: flex-start;
-  gap: 0.75rem;
-  padding: 0.75rem 1rem;
-  color: #fff;
-  background: var(--negro);
-  border: 3px solid var(--negro);
-  border-left-width: 10px;
-  box-shadow: var(--sombra-solida);
-  animation: aviso-entra 0.2s ease-out;
-}
-.aviso--exito {
-  border-left-color: var(--lima);
-}
-.aviso--error {
-  border-left-color: var(--naranja);
-}
-.aviso__icono {
-  font-size: 1.25rem;
-  line-height: 1.2;
-}
-.aviso--exito .aviso__icono {
-  color: var(--lima);
-}
-.aviso--error .aviso__icono {
-  color: var(--naranja);
-}
-.aviso__texto {
-  flex: 1;
-}
-.aviso__texto ul {
-  margin: 0.25rem 0 0;
-  padding-left: 1.2rem;
-}
-.aviso__cerrar {
-  background: none;
-  border: none;
-  color: #fff;
-  font-size: 1.4rem;
-  line-height: 1;
-  cursor: pointer;
+.p-dialogo::backdrop {
+  background: rgb(29 20 16 / 0.6);
 }
 
-@keyframes aviso-entra {
-  from {
-    transform: translateY(10px);
-    opacity: 0;
-  }
+/* ---------- Mapa (Leaflet dentro del recuadro del diseño) ---------- */
+.p-mapa {
+  isolation: isolate; /* las capas de Leaflet (z-index 400+) no tapan el encabezado ni la barra móvil */
+}
+.p-mapa__leaflet {
+  width: 100%;
+  height: 100%;
+  font-family: var(--p-f-texto);
+  background: transparent;
+}
+.p-mapa__herr,
+.p-leyenda {
+  z-index: 1000; /* encima de las capas de Leaflet */
+}
+.p-mapa__herr {
+  left: 56px; /* deja libres los botones de zoom */
+  align-items: center;
+}
+.p-mapa__instruccion {
+  background: var(--p-amarillo-claro);
+  border: var(--p-borde-fino);
+  border-radius: var(--p-radio);
+  padding: 4px 10px;
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+.p-mapa .leaflet-control-zoom a {
+  color: var(--p-tinta);
+  font-weight: 700;
 }
 
-/* ---------- Vista mapa ---------- */
-.vista-mapa {
-  display: grid;
-  gap: 1rem;
-}
-.ayuda {
-  margin: 0;
-}
-.mapa {
-  height: min(60vh, 560px);
-  min-height: 320px;
-  border: var(--borde);
-}
-.leaflet-container {
-  font-family: var(--f-texto);
-  font-size: 0.95rem;
-}
-
-/* Marcadores propios (divIcon): sin el fondo blanco por defecto de Leaflet */
+/* Marcadores (divIcon): sin el cuadro blanco por defecto de Leaflet */
 .marcador-puesto {
   background: none;
   border: none;
 }
 .marcador-nuevo {
-  width: 30px;
-  height: 30px;
+  width: 34px;
+  height: 34px;
   display: grid;
   place-items: center;
-  font-weight: 700;
-  font-size: 1.3rem;
-  color: var(--negro);
-  background: var(--amarillo);
-  border: 3px dashed var(--negro);
+  font-family: var(--p-f-rotulo);
+  font-size: 1.4rem;
+  color: var(--p-tinta);
+  background: var(--p-amarillo);
+  border: 3px dashed var(--p-tinta);
   border-radius: 50%;
 }
 
-/* Mapa + panel de zonas lado a lado en pantallas anchas */
-.vista-mapa__principal {
-  display: grid;
-  gap: 1rem;
-}
-@media (min-width: 900px) {
-  .vista-mapa__principal {
-    grid-template-columns: 1fr 17rem;
-  }
-}
-
-/* ---------- Filtros y contadores ---------- */
-.filtros {
-  display: grid;
-  gap: 0.75rem;
-  padding: 1rem;
-  background: #fff;
-  border: var(--borde);
-}
-.filtros__campos {
-  display: grid;
-  gap: 0.75rem;
-  align-items: end;
-}
-@media (min-width: 700px) {
-  .filtros__campos {
-    grid-template-columns: 2fr 1fr 1fr auto;
-  }
-}
-.contadores {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-.contadores li {
-  display: inline-flex;
-  gap: 0.35rem;
-  align-items: center;
-  padding: 0.2rem 0.6rem;
-  border: 2px solid var(--negro);
-}
-/* Solo el contador "Total" usa crema; los de estado conservan su color (.estado--…) */
-.contadores li:not(.estado) {
-  background: var(--crema);
-}
-
-/* ---------- Zonas ---------- */
-.etiqueta-zona {
-  font-family: var(--f-menu);
-  font-size: 0.95rem;
-  color: var(--negro);
-  background: var(--amarillo);
-  border: 2px solid var(--negro);
+/* Popups: Leaflet solo pone la posición; la tarjeta es la .p-popup del diseño */
+.p-leaflet-popup .leaflet-popup-content-wrapper {
+  background: transparent;
   box-shadow: none;
-}
-.panel-zonas {
-  padding: 1rem;
-  background: #fff;
-  border: var(--borde);
-  align-self: start;
-}
-.panel-zonas h2 {
-  margin: 0 0 0.25rem;
-  font-size: 1.2rem;
-}
-.panel-zonas__ayuda {
-  margin: 0 0 0.75rem;
-  font-size: 0.9rem;
-}
-.panel-zonas__lista {
-  display: grid;
-  gap: 0.75rem;
-  margin: 0;
   padding: 0;
-  list-style: none;
+  border-radius: 0;
 }
-.panel-zonas__lista li {
-  display: grid;
-  gap: 0.35rem;
-  padding-bottom: 0.75rem;
-  border-bottom: 1px solid #d8d0bb;
+.p-leaflet-popup .leaflet-popup-content {
+  margin: 0;
+  width: auto !important;
+  font: inherit;
+  line-height: 1.5;
 }
-.panel-zonas__dias {
-  font-size: 0.9rem;
+.p-leaflet-popup .leaflet-popup-tip {
+  background: var(--p-tinta);
 }
-.panel-zonas__confirmar {
+.p-popup__insignias {
   display: flex;
   flex-wrap: wrap;
-  align-items: center;
-  gap: 0.4rem;
-}
-.panel-zonas .boton {
-  font-size: 0.9rem;
-  padding: 0.3rem 0.7rem;
-  justify-self: start;
+  gap: 6px;
 }
 
-/* ---------- Diálogo (nativo) ---------- */
-.dialogo {
-  width: min(calc(100% - 2rem), 26rem);
-  padding: 1.5rem;
-  border: var(--borde);
-  box-shadow: 8px 8px 0 var(--amarillo);
-  background: var(--crema);
-}
-.dialogo::backdrop {
-  background: rgb(17 17 17 / 0.6);
-}
-.dialogo h2 {
-  margin: 0;
-}
-.campo--dias {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.4rem 1rem;
-  margin: 0;
-  padding: 0.5rem 0.75rem;
-  border: 2px solid var(--negro);
-}
-.campo--dias legend {
-  font-weight: 600;
-  padding: 0 0.25rem;
-}
-.casilla {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.3rem;
-  font-weight: 400;
-}
-
-/* ---------- Popup ---------- */
-.formulario--popup {
-  gap: 0.6rem;
-}
-.popup__titulo {
-  margin: 0 0 0.4rem;
-  font-size: 1.15rem;
-}
-.popup__coordenadas {
-  margin: 0;
+/* Etiqueta con el nombre de la zona */
+.p-etiqueta-zona {
+  font-family: var(--p-f-rotulo);
   font-size: 0.85rem;
+  color: var(--p-tinta);
+  background: var(--p-blanco);
+  border: var(--p-borde-fino);
+  border-radius: 4px;
+  box-shadow: none;
+  padding: 1px 8px;
 }
-.popup__datos {
-  display: grid;
-  grid-template-columns: auto 1fr;
-  gap: 0.2rem 0.75rem;
-  margin: 0.6rem 0;
+.p-etiqueta-zona::before {
+  display: none;
 }
-.popup__datos dt {
+
+/* Confirmación de borrado en el panel de zonas */
+.p-zonas__confirmar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
   font-weight: 700;
 }
-.popup__datos dd {
-  margin: 0;
-}
-.popup__acciones {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-  margin-top: 0.4rem;
-}
-.popup__acciones .boton {
-  font-size: 0.95rem;
-  padding: 0.35rem 0.8rem;
-}
-.popup__confirmar p {
-  margin: 0 0 0.5rem;
+
+/* Leaflet agrega scroll al popup cuando pasa de maxHeight: que la tarjeta no se recorte */
+.p-leaflet-popup .leaflet-popup-scrolled {
+  border: 0;
+  border-radius: var(--p-radio-grande);
 }
 
-/* ---------- Insignias de estado: icono + texto + color ---------- */
-.estado {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.3rem;
-  padding: 0.1rem 0.5rem;
-  font-weight: 700;
-  font-size: 0.85rem;
-  white-space: nowrap;
-  border: 2px solid var(--negro);
-}
-.estado--en-regla {
-  background: var(--verde);
-  color: #fff;
-}
-.estado--vencido {
-  background: var(--naranja);
-  color: var(--negro);
-}
-.estado--fuera {
-  background: var(--negro);
-  color: #fff;
+/* La leyenda no debe tapar la atribución de OpenStreetMap (obligatoria) */
+.p-mapa .p-leyenda {
+  bottom: 30px;
 }
 
-/* ---------- Tabla de puestos ---------- */
-.tabla-puestos h2 {
-  margin: 0 0 0.5rem;
+/* Que nombre y descripción no se partan en una palabra por renglón */
+.p-tabla td[data-col='Nombre'] {
+  min-width: 150px;
 }
-.contador {
-  font-weight: 400;
+.p-tabla td[data-col='Descripción'] {
+  min-width: 180px;
 }
-.tabla__scroll {
-  overflow-x: auto;
-  border: var(--borde);
-  background: #fff;
-}
-.tabla {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 0.95rem;
-}
-.tabla th,
-.tabla td {
-  padding: 0.5rem 0.75rem;
-  text-align: left;
-  vertical-align: top;
-  border-bottom: 1px solid #d8d0bb;
-}
-.tabla th {
-  position: sticky;
-  top: 0;
-  background: var(--negro);
-  color: #fff;
-  white-space: nowrap;
-}
-.tabla__vacia {
-  text-align: center;
-  padding: 1.5rem;
-}
-.chip-giro {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.35rem;
-  white-space: nowrap;
-}
-.chip-giro__color {
-  width: 0.9rem;
-  height: 0.9rem;
-  border: 2px solid var(--negro);
-}
-
-/* Respeta a quien pide menos movimiento */
-@media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
-    animation: none !important;
-    transition: none !important;
+@media (max-width: 720px) {
+  .p-tabla td[data-col='Nombre'],
+  .p-tabla td[data-col='Descripción'] {
+    min-width: 0;
   }
 }

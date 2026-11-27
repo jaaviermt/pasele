@@ -2,31 +2,32 @@ import { useState } from 'react'
 import { Navigate } from 'react-router'
 import { useAuth } from '../context/AuthContext'
 import { useNotice } from '../context/NoticeContext'
+import { AlertaGeneral, Boton, Campo, Logo, Pestanas } from '../components/ui/ui'
+import { IcoEstrella } from '../components/ui/icons'
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+const LOGIN = 'Iniciar sesión'
+const REGISTRO = 'Crear cuenta'
 
 // Mismas reglas que el backend, para avisar antes de enviar
 function validate(mode, form) {
   const errors = {}
 
-  if (mode === 'registro') {
+  if (mode === REGISTRO) {
     if (!form.nombre.trim()) errors.nombre = 'Escribe tu nombre.'
     else if (form.nombre.trim().length > 80) errors.nombre = 'Máximo 80 caracteres.'
   }
 
   if (!form.email.trim()) errors.email = 'Escribe tu correo.'
-  else if (mode === 'registro' && !EMAIL_REGEX.test(form.email.trim())) {
+  else if (mode === REGISTRO && !EMAIL_REGEX.test(form.email.trim())) {
     errors.email = 'El correo no tiene un formato válido.'
   }
 
   if (!form.password) errors.password = 'Escribe tu contraseña.'
-  else if (mode === 'registro' && form.password.length < 8) {
-    errors.password = 'Debe tener al menos 8 caracteres.'
-  } else if (mode === 'registro' && form.password.length > 72) {
-    errors.password = 'Debe tener máximo 72 caracteres.'
-  }
+  else if (mode === REGISTRO && form.password.length < 8) errors.password = 'Debe tener al menos 8 caracteres.'
+  else if (mode === REGISTRO && form.password.length > 72) errors.password = 'Debe tener máximo 72 caracteres.'
 
-  if (mode === 'registro' && form.confirmar !== form.password) {
+  if (mode === REGISTRO && form.confirmar !== form.password) {
     errors.confirmar = 'Las contraseñas no coinciden.'
   }
 
@@ -39,7 +40,7 @@ export default function AccessPage() {
   const { user, login, register } = useAuth()
   const { showSuccess, showError } = useNotice()
 
-  const [mode, setMode] = useState('login') // 'login' | 'registro'
+  const [mode, setMode] = useState(LOGIN)
   const [form, setForm] = useState(EMPTY_FORM)
   const [errors, setErrors] = useState({})
   const [serverError, setServerError] = useState(null)
@@ -72,7 +73,7 @@ export default function AccessPage() {
 
     setSending(true)
     try {
-      if (mode === 'login') {
+      if (mode === LOGIN) {
         await login(form.email.trim(), form.password)
         showSuccess('Bienvenido de vuelta.')
       } else {
@@ -89,90 +90,56 @@ export default function AccessPage() {
     }
   }
 
-  const isLogin = mode === 'login'
+  const field = (name) => ({ name, value: form[name], onChange: handleChange, error: errors[name] })
 
   return (
-    <div className="acceso">
-      <section className="acceso__panel">
-        <h1 className="acceso__titulo">¡Pásele!</h1>
-        <p className="acceso__lema">Cada puesto en su lugar y en regla.</p>
+    <div className="p-root p-acceso">
+      <div><div className="p-papel-picado" /><div className="p-toldo" /></div>
 
-        <div className="acceso__pestanas" role="tablist" aria-label="Tipo de acceso">
-          <button
-            type="button"
-            role="tab"
-            aria-selected={isLogin}
-            className={isLogin ? 'activa' : ''}
-            onClick={() => changeMode('login')}
-          >
-            Iniciar sesión
-          </button>
-          <button
-            type="button"
-            role="tab"
-            aria-selected={!isLogin}
-            className={!isLogin ? 'activa' : ''}
-            onClick={() => changeMode('registro')}
-          >
-            Crear cuenta
-          </button>
+      <main className="p-acceso__main">
+        <div>
+          <p className="p-script" style={{ fontSize: '2rem' }}>¡Bienvenido marchante!</p>
+          <h1 style={{ margin: '8px 0' }}><Logo grande /></h1>
+          <p className="p-acceso__lema">Cada puesto en su lugar y con su permiso</p>
+          <p className="p-acceso__texto">
+            Ubica los puestos del tianguis en el mapa, sabe quién los atiende y qué permisos están al día.
+          </p>
+          <div className="p-acceso__deco" aria-hidden>
+            <div className="p-letrero p-letrero--1">MARTES Y VIERNES</div>
+            <div className="p-letrero p-letrero--2">ZONA<br />CENTRO</div>
+            <div className="p-letrero p-letrero--3"><IcoEstrella size={18} /> 100%<br />AL DÍA</div>
+            <div className="p-letrero p-letrero--4">¿QUÉ LE DAMOS?</div>
+            <div className="p-letrero p-letrero--5">HAY<br />FOLIOS</div>
+          </div>
         </div>
 
-        <form className="formulario" onSubmit={handleSubmit} noValidate>
-          {!isLogin && (
-            <Field label="Nombre" name="nombre" value={form.nombre} error={errors.nombre}
-              onChange={handleChange} autoComplete="name" />
-          )}
+        <div className="p-card">
+          <div style={{ padding: '16px 16px 0' }}>
+            <Pestanas etiqueta="Acceso" items={[LOGIN, REGISTRO]} activa={mode} onCambio={changeMode} />
+          </div>
 
-          <Field label="Correo" name="email" type="email" value={form.email} error={errors.email}
-            onChange={handleChange} autoComplete="email" />
+          <form className="p-card__pad" onSubmit={handleSubmit} noValidate role="tabpanel" aria-label={mode}>
+            {serverError && <AlertaGeneral detalles={serverError.details}>{serverError.message}</AlertaGeneral>}
 
-          <Field label="Contraseña" name="password" type="password" value={form.password}
-            error={errors.password} onChange={handleChange}
-            autoComplete={isLogin ? 'current-password' : 'new-password'}
-            hint={!isLogin ? 'Mínimo 8 caracteres.' : undefined} />
-
-          {!isLogin && (
-            <Field label="Confirmar contraseña" name="confirmar" type="password"
-              value={form.confirmar} error={errors.confirmar} onChange={handleChange}
-              autoComplete="new-password" />
-          )}
-
-          {serverError && (
-            <div className="formulario__error" role="alert">
-              <strong>{serverError.message}</strong>
-              {serverError.details?.length > 0 && (
-                <ul>
-                  {serverError.details.map((detail) => (
-                    <li key={detail}>{detail}</li>
-                  ))}
-                </ul>
-              )}
-            </div>
-          )}
-
-          <button type="submit" className="boton boton--primario" disabled={sending}>
-            {sending ? 'Enviando…' : isLogin ? 'Entrar' : 'Crear cuenta'}
-          </button>
-        </form>
-      </section>
-    </div>
-  )
-}
-
-// Campo con etiqueta y mensaje de error accesible
-function Field({ label, name, error, hint, ...inputProps }) {
-  const errorId = `${name}-error`
-  const hintId = `${name}-ayuda`
-  const describedBy = [error && errorId, hint && hintId].filter(Boolean).join(' ') || undefined
-
-  return (
-    <div className="campo">
-      <label htmlFor={name}>{label}</label>
-      <input id={name} name={name} aria-invalid={Boolean(error)} aria-describedby={describedBy}
-        {...inputProps} />
-      {hint && !error && <small id={hintId}>{hint}</small>}
-      {error && <small id={errorId} className="campo__error">{error}</small>}
+            {mode === LOGIN ? (
+              <>
+                <Campo label="Correo" type="email" autoComplete="email" placeholder="tucorreo@ejemplo.mx" {...field('email')} />
+                <Campo label="Contraseña" type="password" autoComplete="current-password" {...field('password')} />
+                <Boton type="submit" cargando={sending} style={{ width: '100%' }}>Entrar</Boton>
+              </>
+            ) : (
+              <>
+                <Campo label="Nombre" autoComplete="name" {...field('nombre')} />
+                <Campo label="Correo" type="email" autoComplete="email" {...field('email')} />
+                <Campo label="Contraseña" type="password" autoComplete="new-password" ayuda="Mínimo 8 caracteres"
+                  {...field('password')} />
+                <Campo label="Confirmar contraseña" type="password" autoComplete="new-password" {...field('confirmar')} />
+                <Boton type="submit" variante="azul" cargando={sending} style={{ width: '100%' }}>Crear cuenta</Boton>
+              </>
+            )}
+          </form>
+        </div>
+      </main>
     </div>
   )
 }
