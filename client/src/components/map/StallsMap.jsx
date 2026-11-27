@@ -1,21 +1,38 @@
 import { useEffect, useRef, useState } from 'react'
-import { MapContainer, Marker, Popup, TileLayer, useMapEvents } from 'react-leaflet'
+import { MapContainer, Marker, Polygon, Popup, TileLayer, Tooltip, useMapEvents } from 'react-leaflet'
 import LocationPopup from './LocationPopup'
 import NewLocationForm from './NewLocationForm'
+import ZoneDrawControl from './ZoneDrawControl'
 import { createMarkerIcon, newPointIcon } from './markerIcon'
+
+const ZONE_STYLE = { color: '#2b45c9', weight: 3, dashArray: '8 6', fillColor: '#4c8fd6', fillOpacity: 0.15 }
 
 // Centro inicial: León, Guanajuato. Leaflet usa [latitud, longitud].
 const INITIAL_CENTER = [21.1236, -101.682]
 const INITIAL_ZOOM = 15
 
-// Escucha los clics en el mapa y avisa el punto elegido
+// Escucha los clics en el mapa y avisa el punto elegido.
+// Mientras se dibuja una zona, los clics son vértices del polígono y se ignoran aquí.
 function ClickToAdd({ onPick }) {
-  useMapEvents({
+  const map = useMapEvents({
     click(event) {
+      if (map.pm?.globalDrawModeEnabled()) return
       onPick(event.latlng)
     },
   })
   return null
+}
+
+// Zona guardada. interactive={false}: los clics la atraviesan y llegan al mapa,
+// así se pueden registrar puestos dentro del tianguis.
+function ZoneShape({ zone }) {
+  const positions = zone.area.coordinates[0].map(([lng, lat]) => [lat, lng]) // GeoJSON -> Leaflet
+
+  return (
+    <Polygon positions={positions} pathOptions={ZONE_STYLE} interactive={false} pmIgnore>
+      <Tooltip permanent direction="center" className="etiqueta-zona">{zone.nombre}</Tooltip>
+    </Polygon>
+  )
 }
 
 // Marcador temporal con el formulario de alta; abre su popup en cuanto aparece.
@@ -66,7 +83,9 @@ function LocationMarker({ location, categories, vendors, onUpdate, onDelete }) {
   )
 }
 
-export default function StallsMap({ locations, categories, vendors, onCreate, onUpdate, onDelete }) {
+export default function StallsMap({
+  locations, zones, categories, vendors, onCreate, onUpdate, onDelete, onZoneDrawn,
+}) {
   const [newPoint, setNewPoint] = useState(null)
 
   async function handleCreate(body) {
@@ -83,6 +102,12 @@ export default function StallsMap({ locations, categories, vendors, onCreate, on
       />
 
       <ClickToAdd onPick={setNewPoint} />
+      <ZoneDrawControl onDrawn={onZoneDrawn} />
+
+      {/* Zonas primero para que los toldos queden encima */}
+      {zones.map((zone) => (
+        <ZoneShape key={zone.id} zone={zone} />
+      ))}
 
       {locations.map((location) => (
         <LocationMarker key={location.id} location={location} categories={categories}

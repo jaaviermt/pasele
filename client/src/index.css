@@ -288,6 +288,139 @@ textarea {
   border-radius: 50%;
 }
 
+/* Mapa + panel de zonas lado a lado en pantallas anchas */
+.vista-mapa__principal {
+  display: grid;
+  gap: 1rem;
+}
+@media (min-width: 900px) {
+  .vista-mapa__principal {
+    grid-template-columns: 1fr 17rem;
+  }
+}
+
+/* ---------- Filtros y contadores ---------- */
+.filtros {
+  display: grid;
+  gap: 0.75rem;
+  padding: 1rem;
+  background: #fff;
+  border: var(--borde);
+}
+.filtros__campos {
+  display: grid;
+  gap: 0.75rem;
+  align-items: end;
+}
+@media (min-width: 700px) {
+  .filtros__campos {
+    grid-template-columns: 2fr 1fr 1fr auto;
+  }
+}
+.contadores {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.contadores li {
+  display: inline-flex;
+  gap: 0.35rem;
+  align-items: center;
+  padding: 0.2rem 0.6rem;
+  border: 2px solid var(--negro);
+}
+/* Solo el contador "Total" usa crema; los de estado conservan su color (.estado--…) */
+.contadores li:not(.estado) {
+  background: var(--crema);
+}
+
+/* ---------- Zonas ---------- */
+.etiqueta-zona {
+  font-family: var(--f-menu);
+  font-size: 0.95rem;
+  color: var(--negro);
+  background: var(--amarillo);
+  border: 2px solid var(--negro);
+  box-shadow: none;
+}
+.panel-zonas {
+  padding: 1rem;
+  background: #fff;
+  border: var(--borde);
+  align-self: start;
+}
+.panel-zonas h2 {
+  margin: 0 0 0.25rem;
+  font-size: 1.2rem;
+}
+.panel-zonas__ayuda {
+  margin: 0 0 0.75rem;
+  font-size: 0.9rem;
+}
+.panel-zonas__lista {
+  display: grid;
+  gap: 0.75rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.panel-zonas__lista li {
+  display: grid;
+  gap: 0.35rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid #d8d0bb;
+}
+.panel-zonas__dias {
+  font-size: 0.9rem;
+}
+.panel-zonas__confirmar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem;
+}
+.panel-zonas .boton {
+  font-size: 0.9rem;
+  padding: 0.3rem 0.7rem;
+  justify-self: start;
+}
+
+/* ---------- Diálogo (nativo) ---------- */
+.dialogo {
+  width: min(calc(100% - 2rem), 26rem);
+  padding: 1.5rem;
+  border: var(--borde);
+  box-shadow: 8px 8px 0 var(--amarillo);
+  background: var(--crema);
+}
+.dialogo::backdrop {
+  background: rgb(17 17 17 / 0.6);
+}
+.dialogo h2 {
+  margin: 0;
+}
+.campo--dias {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem 1rem;
+  margin: 0;
+  padding: 0.5rem 0.75rem;
+  border: 2px solid var(--negro);
+}
+.campo--dias legend {
+  font-weight: 600;
+  padding: 0 0.25rem;
+}
+.casilla {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-weight: 400;
+}
+
 /* ---------- Popup ---------- */
 .formulario--popup {
   gap: 0.6rem;
