@@ -1,7 +1,8 @@
 // Única función para hablar con el backend. Agrega el token y convierte
 // las respuestas de error en un Error con el mensaje del servidor.
 
-const API_URL = import.meta.env.VITE_API_URL
+// En producción viene de VITE_API_URL; en local, si falta el .env, usa el server de desarrollo
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api'
 const TOKEN_KEY = 'pasele_token'
 
 export function getToken() {
@@ -37,6 +38,11 @@ export async function apiFetch(path, { method = 'GET', body } = {}) {
   }
 
   const data = await response.json().catch(() => null)
+
+  // Si no llegó JSON, la URL de la API está mal (por ejemplo, contestó Vite con su HTML)
+  if (data === null) {
+    throw new Error('El servidor no respondió como se esperaba. Revisa VITE_API_URL en client/.env.')
+  }
 
   if (!response.ok) {
     // Si mandamos token y el servidor respondió 401, la sesión venció
