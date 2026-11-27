@@ -2,8 +2,7 @@
 
 const mongoose = require("mongoose");
 
-// Puesto del tianguis. Su servicio y rutas se agregan en la fase 3;
-// el modelo se necesita desde ya para las reglas de borrado y para Permit.
+// Puesto del tianguis; Permit depende de él para las reglas de borrado.
 const locationSchema = new mongoose.Schema(
     {
         nombre: {
