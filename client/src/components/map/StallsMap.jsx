@@ -5,6 +5,7 @@ import LocationPopup from './LocationPopup'
 import NewLocationForm from './NewLocationForm'
 import ZoneDrawControl from './ZoneDrawControl'
 import { createMarkerIcon, newPointIcon } from './markerIcon'
+import { BASE_LAYER } from './baseLayer'
 import { Boton, InsigniaEstado } from '../ui/ui'
 import { IcoLapizZona, IcoX } from '../ui/icons'
 import { ESTADOS } from '../../utils/estados'
@@ -117,11 +118,7 @@ export default function StallsMap({
     // El botón y la leyenda van encima del mapa, fuera de Leaflet, para que sus clics no lleguen al mapa
     <div className="p-mapa">
       <MapContainer center={INITIAL_CENTER} zoom={INITIAL_ZOOM} className="p-mapa__leaflet">
-        <TileLayer
-          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-          url="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
-          maxZoom={19}
-        />
+        <TileLayer {...BASE_LAYER} />
 
         <ClickToAdd onPick={setNewPoint} />
         <ZoneDrawControl drawing={drawing} onDrawn={onZoneDrawn} onDrawEnd={() => setDrawing(false)} />

@@ -29,7 +29,7 @@ Lo crea el script `npm run seed` junto con datos de ejemplo en los tres estados.
 
 | Parte | Tecnología |
 |---|---|
-| Frontend (`client/`) | React + Vite, React Router, Leaflet + react-leaflet, Leaflet-Geoman |
+| Frontend (`client/`) | React + Vite, React Router, Leaflet + react-leaflet, Leaflet-Geoman, fondo de mapa Mapbox (`light-v11`) |
 | Backend (`server/`) | Node.js + Express 5, Mongoose, bcrypt, jsonwebtoken |
 | Base de datos | MongoDB Atlas (GeoJSON con índices `2dsphere`) |
 | Despliegue | Vercel (frontend), Render (backend), Atlas (datos) |
@@ -114,9 +114,17 @@ En otra terminal:
 ```bash
 cd client
 npm install
-cp .env.example .env      # VITE_API_URL=http://localhost:3000/api
+cp .env.example .env      # VITE_API_URL y VITE_MAPBOX_TOKEN
 npm run dev               # http://localhost:5173
 ```
+
+| Variable (`client/.env`) | Ejemplo | Para qué |
+|---|---|---|
+| `VITE_API_URL` | `http://localhost:3000/api` | Dirección de la API |
+| `VITE_MAPBOX_TOKEN` | `pk.…` | Token público de Mapbox para el fondo del mapa. Sin él se usa OpenStreetMap |
+
+El token se crea en [mapbox.com](https://account.mapbox.com/access-tokens/). Como queda visible en el navegador,
+restríngelo a tus URLs (`http://localhost:5173` y el dominio de Vercel).
 
 Abre http://localhost:5173 (no `127.0.0.1`, porque CORS solo acepta los orígenes de `CLIENT_ORIGINS`).
 
@@ -166,8 +174,9 @@ Abre http://localhost:5173 (no `127.0.0.1`, porque CORS solo acepta los orígene
    | Build Command | `npm run build` |
    | Output Directory | `dist` |
 
-3. **Environment Variables** → `VITE_API_URL=https://TU-SERVICIO.onrender.com/api`.
-   Vite la lee al compilar: si la cambias, vuelve a desplegar.
+3. **Environment Variables** → `VITE_API_URL=https://TU-SERVICIO.onrender.com/api` y `VITE_MAPBOX_TOKEN=pk.…`.
+   Vite las lee al compilar: si cambias alguna, vuelve a desplegar. Agrega el dominio de Vercel a las URLs
+   permitidas del token en Mapbox.
 4. Despliega. `client/vercel.json` redirige todas las rutas a `index.html`, así `/padron` funciona al recargar.
 5. Copia la URL de Vercel a `CLIENT_ORIGINS` en Render (paso 2.3) y redespliega el backend.
 
@@ -180,6 +189,7 @@ Abre http://localhost:5173 (no `127.0.0.1`, porque CORS solo acepta los orígene
 | El backend no arranca: "Falta la variable…" | Falta `MONGODB_URI` o `JWT_SECRET` en Render |
 | Error de conexión a MongoDB | `0.0.0.0/0` no está en Network Access de Atlas o la contraseña es incorrecta |
 | 404 al recargar `/padron` en Vercel | Falta `client/vercel.json` |
+| El mapa sale gris o con el fondo de OpenStreetMap | Falta `VITE_MAPBOX_TOKEN` o el token no permite esa URL |
 
 ## API
 
@@ -201,6 +211,6 @@ errores `{ error: { status, message, details } }` con códigos 200, 201, 400, 40
 
 ## Créditos
 
-- Mapas: © colaboradores de [OpenStreetMap](https://www.openstreetmap.org/copyright).
+- Mapas: © [Mapbox](https://www.mapbox.com/about/maps/) © colaboradores de [OpenStreetMap](https://www.openstreetmap.org/copyright).
 - Letra "Pasele Aplastada": derivada de [Arimo](https://github.com/googlefonts/arimo) (SIL Open Font License 1.1, ver `client/public/fonts/OFL-PaseleAplastada.txt`).
 - Archivo y Sancreek: Google Fonts (SIL Open Font License).
