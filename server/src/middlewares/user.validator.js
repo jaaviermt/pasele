@@ -4,6 +4,9 @@ const AppError = require("../utils/app-error");
 const { isPlainObject, isNonEmptyString, findUnknownFields } = require("../utils/validation");
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const NOMBRE_MAX = 80;
+const PASSWORD_MIN = 8;
+const PASSWORD_MAX = 72;
 
 function validateRegister(req, res, next) {
     const body = req.body;
@@ -17,8 +20,8 @@ function validateRegister(req, res, next) {
 
     if (!isNonEmptyString(nombre)) {
         errors.push("El nombre es obligatorio.");
-    } else if (nombre.trim().length > 80) {
-        errors.push("El nombre debe tener máximo 80 caracteres.");
+    } else if (nombre.trim().length > NOMBRE_MAX) {
+        errors.push(`El nombre debe tener máximo ${NOMBRE_MAX} caracteres.`);
     }
 
     if (!isNonEmptyString(email)) {
@@ -29,11 +32,11 @@ function validateRegister(req, res, next) {
 
     if (typeof password !== "string" || password === "") {
         errors.push("La contraseña es obligatoria.");
-    } else if (password.length < 8) {
-        errors.push("La contraseña debe tener al menos 8 caracteres.");
-    } else if (password.length > 72) {
+    } else if (password.length < PASSWORD_MIN) {
+        errors.push(`La contraseña debe tener al menos ${PASSWORD_MIN} caracteres.`);
+    } else if (password.length > PASSWORD_MAX) {
         // bcrypt solo toma en cuenta los primeros 72 bytes
-        errors.push("La contraseña debe tener máximo 72 caracteres.");
+        errors.push(`La contraseña debe tener máximo ${PASSWORD_MAX} caracteres.`);
     }
 
     if (errors.length > 0) {
