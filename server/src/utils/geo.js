@@ -36,6 +36,11 @@ function onSegment(a, b, c) {
     );
 }
 
+// Dos valores quedan en lados opuestos cuando uno es positivo y el otro negativo
+function oppositeSigns(a, b) {
+    return (a > 0 && b < 0) || (a < 0 && b > 0);
+}
+
 // ¿Los segmentos p1-p2 y p3-p4 se tocan o se cruzan?
 function segmentsIntersect(p1, p2, p3, p4) {
     const d1 = orientation(p3, p4, p1);
@@ -44,8 +49,7 @@ function segmentsIntersect(p1, p2, p3, p4) {
     const d4 = orientation(p1, p2, p4);
 
     // Caso normal: cada segmento deja los extremos del otro en lados opuestos
-    if (((d1 > 0 && d2 < 0) || (d1 < 0 && d2 > 0)) &&
-        ((d3 > 0 && d4 < 0) || (d3 < 0 && d4 > 0))) {
+    if (oppositeSigns(d1, d2) && oppositeSigns(d3, d4)) {
         return true;
     }
 
