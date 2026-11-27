@@ -261,6 +261,7 @@
 }
 .p-icon-btn:hover { background: var(--p-amarillo); }
 .p-icon-btn { transition: background 0.12s; }
+.p-icon-btn:active { background: var(--p-rosa); }
 
 /* ---------- Formularios ---------- */
 .p-campo { display: grid; gap: 6px; margin-bottom: var(--p-e-4); }
