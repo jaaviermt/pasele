@@ -60,6 +60,10 @@ textarea {
   background: #fff;
   color: var(--negro);
 }
+.boton--peligro {
+  background: var(--negro);
+  color: #fff;
+}
 
 /* ---------- Encabezado y navegación ---------- */
 .encabezado {
@@ -157,12 +161,17 @@ textarea {
 .campo label {
   font-weight: 600;
 }
-.campo input {
+.campo input,
+.campo select,
+.campo textarea {
   padding: 0.5rem 0.6rem;
   border: 2px solid var(--negro);
   background: #fff;
 }
-.campo input[aria-invalid='true'] {
+.campo textarea {
+  resize: vertical;
+}
+.campo [aria-invalid='true'] {
   border-color: var(--rojo-texto);
 }
 .campo small {
@@ -241,6 +250,151 @@ textarea {
     transform: translateY(10px);
     opacity: 0;
   }
+}
+
+/* ---------- Vista mapa ---------- */
+.vista-mapa {
+  display: grid;
+  gap: 1rem;
+}
+.ayuda {
+  margin: 0;
+}
+.mapa {
+  height: min(60vh, 560px);
+  min-height: 320px;
+  border: var(--borde);
+}
+.leaflet-container {
+  font-family: var(--f-texto);
+  font-size: 0.95rem;
+}
+
+/* Marcadores propios (divIcon): sin el fondo blanco por defecto de Leaflet */
+.marcador-puesto {
+  background: none;
+  border: none;
+}
+.marcador-nuevo {
+  width: 30px;
+  height: 30px;
+  display: grid;
+  place-items: center;
+  font-weight: 700;
+  font-size: 1.3rem;
+  color: var(--negro);
+  background: var(--amarillo);
+  border: 3px dashed var(--negro);
+  border-radius: 50%;
+}
+
+/* ---------- Popup ---------- */
+.formulario--popup {
+  gap: 0.6rem;
+}
+.popup__titulo {
+  margin: 0 0 0.4rem;
+  font-size: 1.15rem;
+}
+.popup__coordenadas {
+  margin: 0;
+  font-size: 0.85rem;
+}
+.popup__datos {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.2rem 0.75rem;
+  margin: 0.6rem 0;
+}
+.popup__datos dt {
+  font-weight: 700;
+}
+.popup__datos dd {
+  margin: 0;
+}
+.popup__acciones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.4rem;
+}
+.popup__acciones .boton {
+  font-size: 0.95rem;
+  padding: 0.35rem 0.8rem;
+}
+.popup__confirmar p {
+  margin: 0 0 0.5rem;
+}
+
+/* ---------- Insignias de estado: icono + texto + color ---------- */
+.estado {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.1rem 0.5rem;
+  font-weight: 700;
+  font-size: 0.85rem;
+  white-space: nowrap;
+  border: 2px solid var(--negro);
+}
+.estado--en-regla {
+  background: var(--verde);
+  color: #fff;
+}
+.estado--vencido {
+  background: var(--naranja);
+  color: var(--negro);
+}
+.estado--fuera {
+  background: var(--negro);
+  color: #fff;
+}
+
+/* ---------- Tabla de puestos ---------- */
+.tabla-puestos h2 {
+  margin: 0 0 0.5rem;
+}
+.contador {
+  font-weight: 400;
+}
+.tabla__scroll {
+  overflow-x: auto;
+  border: var(--borde);
+  background: #fff;
+}
+.tabla {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+}
+.tabla th,
+.tabla td {
+  padding: 0.5rem 0.75rem;
+  text-align: left;
+  vertical-align: top;
+  border-bottom: 1px solid #d8d0bb;
+}
+.tabla th {
+  position: sticky;
+  top: 0;
+  background: var(--negro);
+  color: #fff;
+  white-space: nowrap;
+}
+.tabla__vacia {
+  text-align: center;
+  padding: 1.5rem;
+}
+.chip-giro {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  white-space: nowrap;
+}
+.chip-giro__color {
+  width: 0.9rem;
+  height: 0.9rem;
+  border: 2px solid var(--negro);
 }
 
 /* Respeta a quien pide menos movimiento */
