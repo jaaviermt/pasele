@@ -22,12 +22,13 @@ function ClickToAdd({ onPick }) {
   const map = useMapEvents({
     click(event) {
       if (map.pm?.globalDrawModeEnabled()) return
+      // Un botón del popup que se quitó del DOM al hacer clic (ej. la "x") no es un clic en el mapa
+      if (!event.originalEvent?.target?.isConnected) return
       onPick(event.latlng)
     },
   })
   return null
 }
-
 // Zona guardada. interactive={false}: los clics la atraviesan y llegan al mapa,
 // así se pueden registrar puestos dentro del tianguis.
 function ZoneShape({ zone }) {
