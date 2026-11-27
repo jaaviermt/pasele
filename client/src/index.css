@@ -1,0 +1,5 @@
+/* Estilos base mínimos. Los tokens de la guía visual se agregan en la fase 4. */
+body {
+  margin: 0;
+  font-family: system-ui, sans-serif;
+}
