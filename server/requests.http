@@ -98,3 +98,144 @@ Authorization: Bearer token.falso.123
 
 ### Ruta inexistente -> 404
 GET {{baseUrl}}/no-existe
+
+# =====================================================================
+# FASE 2: CATÁLOGOS (todas requieren token: ejecuta antes "Login correcto")
+# =====================================================================
+@categoryId = {{newCategory.response.body.data.id}}
+@vendorId = {{newVendor.response.body.data.id}}
+@permitId = {{newPermit.response.body.data.id}}
+# Pega aquí el id de un puesto (Location) cuando exista la fase 3
+@locationId = PEGA_AQUI_EL_ID_DE_UN_PUESTO
+
+### ---------- GIROS (/categories) ----------
+
+### Crear giro -> 201
+# @name newCategory
+POST {{baseUrl}}/categories
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{ "nombre": "Comida", "color": "#e8201a", "icono": "🌮" }
+
+### Nombre repetido (sin importar mayúsculas) -> 400
+POST {{baseUrl}}/categories
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{ "nombre": "comida", "color": "#e8201a", "icono": "🌮" }
+
+### Datos inválidos -> 400 con details
+POST {{baseUrl}}/categories
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{ "nombre": "", "color": "rojo" }
+
+### Listar -> 200
+GET {{baseUrl}}/categories
+Authorization: Bearer {{token}}
+
+### Detalle -> 200
+GET {{baseUrl}}/categories/{{categoryId}}
+Authorization: Bearer {{token}}
+
+### Id mal formado -> 400
+GET {{baseUrl}}/categories/123
+Authorization: Bearer {{token}}
+
+### Id válido que no existe -> 404
+GET {{baseUrl}}/categories/6b0912824310000000000000
+Authorization: Bearer {{token}}
+
+### Editar -> 200
+PATCH {{baseUrl}}/categories/{{categoryId}}
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{ "color": "#2b45c9" }
+
+### Editar sin campos -> 400
+PATCH {{baseUrl}}/categories/{{categoryId}}
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{}
+
+### Borrar -> 200 (o 400 si algún puesto lo usa)
+DELETE {{baseUrl}}/categories/{{categoryId}}
+Authorization: Bearer {{token}}
+
+### Sin token -> 401
+GET {{baseUrl}}/categories
+
+### ---------- COMERCIANTES (/vendors) ----------
+
+### Crear comerciante -> 201
+# @name newVendor
+POST {{baseUrl}}/vendors
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{ "nombre": "José Pérez", "apodo": "Don Pepe", "telefono": "4771234567" }
+
+### Teléfono inválido -> 400
+POST {{baseUrl}}/vendors
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{ "nombre": "Rosa", "telefono": "477-123" }
+
+### Listar -> 200
+GET {{baseUrl}}/vendors
+Authorization: Bearer {{token}}
+
+### Editar -> 200
+PATCH {{baseUrl}}/vendors/{{vendorId}}
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{ "apodo": "Pepe" }
+
+### Borrar -> 200 (o 400 si atiende algún puesto)
+DELETE {{baseUrl}}/vendors/{{vendorId}}
+Authorization: Bearer {{token}}
+
+### ---------- PERMISOS (/permits) ----------
+
+### Crear permiso -> 201 (necesita un puesto existente)
+# @name newPermit
+POST {{baseUrl}}/permits
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{ "location": "{{locationId}}", "folio": "TL-001", "vigenteHasta": "2027-06-30", "cuota": 350 }
+
+### Puesto que no existe -> 400
+POST {{baseUrl}}/permits
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{ "location": "6b0912824310000000000000", "folio": "TL-002", "vigenteHasta": "2027-06-30", "cuota": 350 }
+
+### Fecha imposible y cuota negativa -> 400
+POST {{baseUrl}}/permits
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{ "location": "{{locationId}}", "folio": "TL-003", "vigenteHasta": "2027-02-31", "cuota": -5 }
+
+### Listar (trae el nombre del puesto con populate) -> 200
+GET {{baseUrl}}/permits
+Authorization: Bearer {{token}}
+
+### Editar -> 200
+PATCH {{baseUrl}}/permits/{{permitId}}
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{ "cuota": 400 }
+
+### Borrar -> 200
+DELETE {{baseUrl}}/permits/{{permitId}}
+Authorization: Bearer {{token}}

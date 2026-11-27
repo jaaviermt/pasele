@@ -1,8 +1,13 @@
 "use strict";
 
 const express = require("express");
+
+const { requireAuth } = require("../middlewares/auth.middleware");
 const healthRoutes = require("./health.routes");
 const authRoutes = require("./auth.routes");
+const categoryRoutes = require("./category.routes");
+const vendorRoutes = require("./vendor.routes");
+const permitRoutes = require("./permit.routes");
 
 // Monta todas las rutas bajo /api
 function registerRoutes(app) {
@@ -12,7 +17,10 @@ function registerRoutes(app) {
     apiRouter.use("/health", healthRoutes);
     apiRouter.use("/auth", authRoutes);
 
-    // Las rutas protegidas de las siguientes fases usarán requireAuth
+    // Rutas protegidas: requireAuth corre antes de cada una
+    apiRouter.use("/categories", requireAuth, categoryRoutes);
+    apiRouter.use("/vendors", requireAuth, vendorRoutes);
+    apiRouter.use("/permits", requireAuth, permitRoutes);
 
     app.use("/api", apiRouter);
 }

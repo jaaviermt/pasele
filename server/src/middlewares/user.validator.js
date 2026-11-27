@@ -1,23 +1,14 @@
 "use strict";
 
 const AppError = require("../utils/app-error");
+const { isPlainObject, isNonEmptyString, findUnknownFields } = require("../utils/validation");
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-function isNonEmptyString(value) {
-    return typeof value === "string" && value.trim() !== "";
-}
-
-// Devuelve un error por cada campo que no esté en la lista permitida
-function findUnknownFields(body, allowedFields) {
-    const unknown = Object.keys(body).filter((field) => !allowedFields.includes(field));
-    return unknown.length > 0 ? [`Campos no permitidos: ${unknown.join(", ")}.`] : [];
-}
 
 function validateRegister(req, res, next) {
     const body = req.body;
 
-    if (!body || typeof body !== "object" || Array.isArray(body)) {
+    if (!isPlainObject(body)) {
         return next(new AppError(400, "El cuerpo debe ser un objeto JSON."));
     }
 
@@ -55,7 +46,7 @@ function validateRegister(req, res, next) {
 function validateLogin(req, res, next) {
     const body = req.body;
 
-    if (!body || typeof body !== "object" || Array.isArray(body)) {
+    if (!isPlainObject(body)) {
         return next(new AppError(400, "El cuerpo debe ser un objeto JSON."));
     }
 

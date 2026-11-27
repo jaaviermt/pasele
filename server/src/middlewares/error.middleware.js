@@ -25,7 +25,9 @@ function errorHandler(err, req, res, next) {
 
     // Id mal formado o tipo incorrecto (ej. texto donde va un número)
     else if (err instanceof mongoose.Error.CastError) {
-        error = new AppError(400, `Valor inválido para el campo '${err.path}'.`);
+        error = err.path === "_id"
+            ? new AppError(400, "El id enviado no es válido.")
+            : new AppError(400, `Valor inválido para el campo '${err.path}'.`);
     }
 
     // Índice único violado (ej. dos peticiones con el mismo correo a la vez)
