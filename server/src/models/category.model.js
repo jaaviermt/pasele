@@ -2,7 +2,7 @@
 
 const mongoose = require("mongoose");
 
-// Giro del puesto (comida, ropa, frutas...)
+// Giro del puesto (comida, ropa, frutas, etc.).
 const categorySchema = new mongoose.Schema(
     {
         nombre: {
