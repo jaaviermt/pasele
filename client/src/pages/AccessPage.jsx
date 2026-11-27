@@ -3,7 +3,6 @@ import { Navigate } from 'react-router'
 import { useAuth } from '../context/AuthContext'
 import { useNotice } from '../context/NoticeContext'
 import { AlertaGeneral, Boton, Campo, Logo, Pestanas } from '../components/ui/ui'
-import { IcoEstrella } from '../components/ui/icons'
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 const LOGIN = 'Iniciar sesión'
@@ -35,6 +34,19 @@ function validate(mode, form) {
 }
 
 const EMPTY_FORM = { nombre: '', email: '', password: '', confirmar: '' }
+
+// Caja de fecha del cartel con el día de hoy (horario de México)
+function FechaDeHoy() {
+  const parte = (opciones) =>
+    new Date().toLocaleDateString('es-MX', { timeZone: 'America/Mexico_City', ...opciones })
+  return (
+    <div className="p-fecha" aria-label={`Hoy, ${parte({ dateStyle: 'full' })}`}>
+      <span className="p-fecha__dia" aria-hidden>{parte({ weekday: 'long' })}</span>
+      <span className="p-fecha__num" aria-hidden>{parte({ day: 'numeric' })}</span>
+      <span className="p-fecha__mes" aria-hidden>{parte({ month: 'long' })} {parte({ year: 'numeric' })}</span>
+    </div>
+  )
+}
 
 export default function AccessPage() {
   const { user, login, register } = useAuth()
@@ -97,23 +109,29 @@ export default function AccessPage() {
       <div><div className="p-papel-picado" /><div className="p-toldo" /></div>
 
       <main className="p-acceso__main">
-        <div>
-          <p className="p-script" style={{ fontSize: '2rem' }}>¡Bienvenido marchante!</p>
-          <h1 style={{ margin: '8px 0' }}><Logo grande /></h1>
+        {/* Lado izquierdo: el cartel */}
+        <div className="p-acceso__cartel">
+          <p className="p-regla">Tianguis en el mapa</p>
+          <h1 style={{ margin: 0 }} className="p-destellos"><Logo grande /></h1>
           <p className="p-acceso__lema">Cada puesto en su lugar y con su permiso</p>
+
+          <div className="p-acceso__fila">
+            <FechaDeHoy />
+            {/* Line-up del tianguis, de mayor a menor como en un cartel */}
+            <ul className="p-lineup" aria-label="Giros del tianguis">
+              <li>Antojitos · Frutas · Ropa de paca</li>
+              <li>Fierros viejos · Dulces típicos · Plantas</li>
+              <li>Chácharas · Elotes · Juguetes · Flores · Y más</li>
+            </ul>
+          </div>
+
           <p className="p-acceso__texto">
             Ubica los puestos del tianguis en el mapa, sabe quién los atiende y qué permisos están al día.
           </p>
-          <div className="p-acceso__deco" aria-hidden>
-            <div className="p-letrero p-letrero--1">MARTES Y VIERNES</div>
-            <div className="p-letrero p-letrero--2">ZONA<br />CENTRO</div>
-            <div className="p-letrero p-letrero--3"><IcoEstrella size={18} /> 100%<br />AL DÍA</div>
-            <div className="p-letrero p-letrero--4">¿QUÉ LE DAMOS?</div>
-            <div className="p-letrero p-letrero--5">HAY<br />FOLIOS</div>
-          </div>
+          <div className="p-rayos" aria-hidden />
         </div>
 
-        <div className="p-card">
+        <div className="p-card p-marco-filete p-acceso__formulario">
           <div style={{ padding: '16px 16px 0' }}>
             <Pestanas etiqueta="Acceso" items={[LOGIN, REGISTRO]} activa={mode} onCambio={changeMode} />
           </div>

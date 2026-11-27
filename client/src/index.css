@@ -24,6 +24,8 @@ body {
 .p-toast__msg {
   font-family: var(--p-f-texto);
   font-weight: 700;
+  font-size: 1rem; /* el título usa la letra aplastada grande; el mensaje va en texto normal */
+  text-transform: none;
 }
 .p-alerta__lista {
   margin: 6px 0 0;
@@ -91,8 +93,8 @@ body {
   height: 34px;
   display: grid;
   place-items: center;
-  font-family: var(--p-f-rotulo);
-  font-size: 1.4rem;
+  font-family: var(--p-f-rotulo); font-weight: 400;
+  font-size: 2.39rem;
   color: var(--p-tinta);
   background: var(--p-amarillo);
   border: 3px dashed var(--p-tinta);
@@ -123,8 +125,8 @@ body {
 
 /* Etiqueta con el nombre de la zona */
 .p-etiqueta-zona {
-  font-family: var(--p-f-rotulo);
-  font-size: 0.85rem;
+  font-family: var(--p-f-rotulo); font-weight: 400;
+  font-size: 1.45rem;
   color: var(--p-tinta);
   background: var(--p-blanco);
   border: var(--p-borde-fino);
