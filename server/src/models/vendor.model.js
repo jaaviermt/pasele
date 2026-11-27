@@ -2,7 +2,7 @@
 
 const mongoose = require("mongoose");
 
-// Comerciante que atiende uno o varios puestos
+// Comerciante que atiende uno o varios puestos.
 const vendorSchema = new mongoose.Schema(
     {
         nombre: {
