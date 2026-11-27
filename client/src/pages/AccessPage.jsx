@@ -8,7 +8,7 @@ const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 const LOGIN = 'Iniciar sesión'
 const REGISTRO = 'Crear cuenta'
 
-// Mismas reglas que el backend, para avisar antes de enviar
+// Mismas reglas que el backend, para avisar antes de enviar.
 function validate(mode, form) {
   const errors = {}
 
