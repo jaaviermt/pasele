@@ -168,3 +168,18 @@ body {
     min-width: 0;
   }
 }
+
+/* ---------- Padrón ---------- */
+.p-padron {
+  border-top-left-radius: 0;
+  padding: var(--p-e-4);
+}
+.p-padron__barra {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: var(--p-e-3);
+}
+.p-fila-acciones {
+  display: flex;
+  gap: 6px;
+}
