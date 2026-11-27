@@ -41,6 +41,10 @@ const permitSchema = new mongoose.Schema(
     }
 );
 
+// Cada puesto consulta sus permisos y el padrón filtra por vigencia
+permitSchema.index({ location: 1, vigenteHasta: 1 });
+permitSchema.index({ vigenteHasta: 1 });
+
 const Permit = mongoose.model("Permit", permitSchema);
 
 module.exports = Permit;

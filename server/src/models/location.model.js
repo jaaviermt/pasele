@@ -60,6 +60,11 @@ const locationSchema = new mongoose.Schema(
 
 locationSchema.index({ ubicacion: "2dsphere" });
 
+// La tabla filtra por giro y ordena por fecha; el mapa filtra por creador
+locationSchema.index({ createdAt: -1 });
+locationSchema.index({ category: 1, createdAt: -1 });
+locationSchema.index({ createdBy: 1 });
+
 const Location = mongoose.model("Location", locationSchema);
 
 module.exports = Location;
