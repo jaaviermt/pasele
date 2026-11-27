@@ -1,5 +1,254 @@
-/* Estilos base mínimos. Los tokens de la guía visual se agregan en la fase 4. */
+/* Estilos base y de las piezas de la fase 4. La guía visual completa se aplica en la fase 8. */
+@import './styles/tokens.css';
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
 body {
   margin: 0;
-  font-family: system-ui, sans-serif;
+  font-family: var(--f-texto);
+  font-size: 1rem;
+  line-height: 1.5;
+  color: var(--negro);
+  background: var(--crema);
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+:focus-visible {
+  outline: 3px solid var(--azul);
+  outline-offset: 2px;
+}
+
+.cargando {
+  padding: 2rem;
+  text-align: center;
+}
+
+/* ---------- Botones: borde negro, sombra sólida, se hunden al presionar ---------- */
+.boton {
+  font-family: var(--f-menu);
+  font-size: 1.1rem;
+  letter-spacing: 0.04em;
+  padding: 0.5rem 1.1rem;
+  border: var(--borde);
+  box-shadow: var(--sombra-solida);
+  cursor: pointer;
+  transition: transform 0.08s, box-shadow 0.08s;
+}
+.boton:active:not(:disabled) {
+  transform: translate(4px, 4px);
+  box-shadow: 0 0 0 var(--negro);
+}
+.boton:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+.boton--primario {
+  background: var(--rojo);
+  color: #fff;
+}
+.boton--secundario {
+  background: #fff;
+  color: var(--negro);
+}
+
+/* ---------- Encabezado y navegación ---------- */
+.encabezado {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1rem 2rem;
+  padding: 0.75rem 1.5rem;
+  background: var(--crema);
+  border-bottom: var(--borde);
+}
+.encabezado__titulo {
+  margin: 0;
+  font-size: 2.2rem;
+}
+.encabezado__nav {
+  display: flex;
+  gap: 1rem;
+}
+.encabezado__nav a {
+  font-family: var(--f-menu);
+  font-size: 1.2rem;
+  color: var(--negro);
+  text-decoration: none;
+  padding: 0.2rem 0.6rem;
+  border: 2px solid transparent;
+}
+.encabezado__nav a.active {
+  border-color: var(--negro);
+  background: var(--amarillo);
+}
+.encabezado__usuario {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+.contenido {
+  padding: 1.5rem;
+}
+
+/* ---------- Pantalla de acceso ---------- */
+.acceso {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 1.5rem;
+  background: var(--negro);
+}
+.acceso__panel {
+  width: min(100%, 26rem);
+  padding: 2rem;
+  background: var(--crema);
+  border: var(--borde);
+  box-shadow: 8px 8px 0 var(--amarillo);
+}
+.acceso__titulo {
+  margin: 0;
+  font-family: var(--f-cartel);
+  font-size: 3rem;
+  text-align: center;
+}
+.acceso__lema {
+  margin: 0 0 1.25rem;
+  text-align: center;
+}
+.acceso__pestanas {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  margin-bottom: 1.25rem;
+  border: var(--borde);
+}
+.acceso__pestanas button {
+  padding: 0.5rem;
+  font-family: var(--f-menu);
+  font-size: 1.05rem;
+  background: #fff;
+  border: none;
+  cursor: pointer;
+}
+.acceso__pestanas button.activa {
+  background: var(--azul);
+  color: #fff;
+}
+
+/* ---------- Formularios (siempre en Barlow) ---------- */
+.formulario {
+  display: grid;
+  gap: 1rem;
+}
+.campo {
+  display: grid;
+  gap: 0.25rem;
+}
+.campo label {
+  font-weight: 600;
+}
+.campo input {
+  padding: 0.5rem 0.6rem;
+  border: 2px solid var(--negro);
+  background: #fff;
+}
+.campo input[aria-invalid='true'] {
+  border-color: var(--rojo-texto);
+}
+.campo small {
+  font-size: 0.875rem;
+}
+.campo__error,
+.formulario__error {
+  color: var(--rojo-texto);
+}
+.formulario__error {
+  padding: 0.75rem;
+  border: 2px solid var(--rojo-texto);
+  background: #fff;
+}
+.formulario__error ul {
+  margin: 0.25rem 0 0;
+  padding-left: 1.2rem;
+}
+
+/* ---------- Avisos: fluorescente solo sobre negro ---------- */
+.avisos {
+  position: fixed;
+  right: 1rem;
+  bottom: 1rem;
+  z-index: 2000; /* por encima del mapa de Leaflet */
+  display: grid;
+  gap: 0.75rem;
+  width: min(calc(100% - 2rem), 24rem);
+}
+.aviso {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  color: #fff;
+  background: var(--negro);
+  border: 3px solid var(--negro);
+  border-left-width: 10px;
+  box-shadow: var(--sombra-solida);
+  animation: aviso-entra 0.2s ease-out;
+}
+.aviso--exito {
+  border-left-color: var(--lima);
+}
+.aviso--error {
+  border-left-color: var(--naranja);
+}
+.aviso__icono {
+  font-size: 1.25rem;
+  line-height: 1.2;
+}
+.aviso--exito .aviso__icono {
+  color: var(--lima);
+}
+.aviso--error .aviso__icono {
+  color: var(--naranja);
+}
+.aviso__texto {
+  flex: 1;
+}
+.aviso__texto ul {
+  margin: 0.25rem 0 0;
+  padding-left: 1.2rem;
+}
+.aviso__cerrar {
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 1.4rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+@keyframes aviso-entra {
+  from {
+    transform: translateY(10px);
+    opacity: 0;
+  }
+}
+
+/* Respeta a quien pide menos movimiento */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+  }
 }
