@@ -35,7 +35,7 @@ export function formatPhone(phone) {
   return phone ? phone.replace(/(\d{2})(\d{4})(\d{4})/, '$1 $2 $3') : '—'
 }
 
-// 6 decimales ≈ 10 cm de precisión, suficiente para ubicar un puesto
+// 6 decimales ≈ 10 cm de precisión, suficiente para ubicar un puesto.
 export function formatCoordinate(value) {
   return typeof value === 'number' ? value.toFixed(6) : '—'
 }
