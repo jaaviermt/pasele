@@ -4,7 +4,7 @@ const mongoose = require("mongoose");
 
 const DIAS = ["lunes", "martes", "miercoles", "jueves", "viernes", "sabado", "domingo"];
 
-// Zona donde se pone un tianguis
+// Zona donde se pone un tianguis.
 const zoneSchema = new mongoose.Schema(
     {
         nombre: {
